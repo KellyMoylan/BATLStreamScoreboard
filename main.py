@@ -4,30 +4,23 @@ from tkinter import *
 
 w = 1000
 h = 600
+bgcolour = "white"
+upArrow = u"\u25B2"
+downArrow = u"\u25BC"
+throwList = ['-', 'D', '0', '1', '3', '5', '7']
+folderPath = ""
+leftAxes = [0, 0, 0, 0, 0]
+rightAxes = [0, 0, 0, 0, 0]
 
+thrower1UpButtons = []
+thrower1AxeBoxes = []
+thrower1DownButtons = []
 
+thrower2UpButtons = []
+thrower2AxeBoxes = []
+thrower2DownButtons = []
 
 class application(Tk):
-
-    bgcolour = "white"
-    upArrow = u"\u25B2"
-    downArrow = u"\u25BC"
-    throwList = ['-', 'D', '0', '1', '3', '5', '7']
-    folderPath = ""
-    leftAxes = [0, 0, 0, 0, 0]
-    rightAxes = [0, 0, 0, 0, 0]
-
-    leftFirst = StringVar()
-    leftSecond = StringVar()
-    leftThird = StringVar()
-    leftFourth = StringVar()
-    leftFifth = StringVar()
-
-    rightFirst = StringVar()
-    rightSecond = StringVar()
-    rightThird = StringVar()
-    rightFourth = StringVar()
-    rightFifth = StringVar()
 
     def __init__(self,parent):
         Tk.__init__(self,parent)
@@ -36,6 +29,7 @@ class application(Tk):
         self.resizable(width=False, height=False)
         self.configure(background=bgcolour)
         self.initialize()
+        self.update_axes()
 
     def initialize(self):
         logo = PhotoImage(file="images/batllogo.gif")
@@ -57,8 +51,8 @@ class application(Tk):
         matchTitleEntry.grid(row=2, column=2, sticky=E, padx=(100,0))
         matchTitleButton.grid(row=2, column=3, sticky=W, padx=(0, 100))
 
-        self.createThrower1(logo)
-        self.createThrower2(logo)
+        self.create_thrower1()
+        self.create_thrower2()
 
         switchButton = Button(self, text="<- SWITCH ->")
         switchButton.grid(row=3, column=2, padx=20)
@@ -69,11 +63,35 @@ class application(Tk):
         nextGameButton = Button(self, text="Next Game", width=60, height=2, font=('ariel', 16, 'bold'))
         nextGameButton.grid(row=7, column=1, columnspan = 3, pady=5)
 
-    def changeAxe(self, postion, direction):
+    def update_axes(self):
+        for i in range(0,thrower1AxeBoxes.__len__()):
+            thrower1AxeBoxes[i].delete(0, 'end')
+            thrower1AxeBoxes[i].insert(0,throwList[leftAxes[i]])
+        for i in range(0, thrower2AxeBoxes.__len__()):
+            thrower2AxeBoxes[i].delete(0, 'end')
+            thrower2AxeBoxes[i].insert(0,throwList[rightAxes[i]])
+
+    def change_axe(self, position, direction, side):
         if(direction == 0):
+            if(side == 0):
+                if(leftAxes[position] < 6):
+                    leftAxes[position] += 1
+                    self.update_axes()
+            else:
+                if(rightAxes[position] < 6):
+                    rightAxes[position] += 1
+                    self.update_axes()
+        else:
+            if (side == 0):
+                if(leftAxes[position] > 0):
+                    leftAxes[position] -= 1
+                    self.update_axes()
+            else:
+                if(rightAxes[position] > 0):
+                    rightAxes[position] -= 1
+                    self.update_axes()
 
-
-    def createThrower1(self,logo):
+    def create_thrower1(self):
         thrower1Frame = LabelFrame(self, bg=bgcolour, width=(w / 2) - 100, height=300, relief=GROOVE, text="Left Thrower", font=("ariel", 16, "bold"))
         thrower1Frame.grid(row=3, column=1, rowspan=3, padx=10)
 
@@ -103,45 +121,20 @@ class application(Tk):
                                       relief=GROOVE, text="Axes", font=("ariel", 12, "bold"))
         thrower1AxeFrame.grid(row=4, column=2, columnspan=3, padx=5)
 
-        thrower1Axe1UpButton = Button(thrower1AxeFrame, text=upArrow, font=("ariel", 7, "bold"))
-        thrower1Axe1UpButton.grid(row=1, column=1, padx=20, pady=5)
-        thrower1Axe2UpButton = Button(thrower1AxeFrame, text=upArrow, font=("ariel", 7, "bold"))
-        thrower1Axe2UpButton.grid(row=1, column=2, padx=20, pady=5)
-        thrower1Axe3UpButton = Button(thrower1AxeFrame, text=upArrow, font=("ariel", 7, "bold"))
-        thrower1Axe3UpButton.grid(row=1, column=3, padx=20, pady=5)
-        thrower1Axe4UpButton = Button(thrower1AxeFrame, text=upArrow, font=("ariel", 7, "bold"))
-        thrower1Axe4UpButton.grid(row=1, column=4, padx=20, pady=5)
-        thrower1Axe5UpButton = Button(thrower1AxeFrame, text=upArrow, font=("ariel", 7, "bold"))
-        thrower1Axe5UpButton.grid(row=1, column=5, padx=20, pady=5)
+        for i in range(0, 5):
+            thrower1UpButtons.append(Button(thrower1AxeFrame, text=upArrow, font=("ariel", 7, "bold"), command= lambda i=i: self.change_axe(i, 0, 0)))
+            thrower1UpButtons[i].grid(row=1, column=i+1, padx=20, pady=5)
 
-        thrower1Axe1Box = Entry(thrower1AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
-                                borderwidth=2)
-        thrower1Axe1Box.grid(row=2, column=1, pady=5)
-        thrower1Axe2Box = Entry(thrower1AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
-                                borderwidth=2)
-        thrower1Axe2Box.grid(row=2, column=2, pady=5)
-        thrower1Axe3Box = Entry(thrower1AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
-                                borderwidth=2)
-        thrower1Axe3Box.grid(row=2, column=3, pady=5)
-        thrower1Axe4Box = Entry(thrower1AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
-                                borderwidth=2)
-        thrower1Axe4Box.grid(row=2, column=4, pady=5)
-        thrower1Axe5Box = Entry(thrower1AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
-                                borderwidth=2)
-        thrower1Axe5Box.grid(row=2, column=5, pady=5)
+        for i in range(0, 5):
+            thrower1AxeBoxes.append(Entry(thrower1AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
+                                borderwidth=2))
+            thrower1AxeBoxes[i].grid(row=2, column=i+1, pady=5)
 
-        thrower1Axe1DownButton = Button(thrower1AxeFrame, text=downArrow, font=("ariel", 7, "bold"))
-        thrower1Axe1DownButton.grid(row=3, column=1, pady=5)
-        thrower1Axe2DownButton = Button(thrower1AxeFrame, text=downArrow, font=("ariel", 7, "bold"))
-        thrower1Axe2DownButton.grid(row=3, column=2, pady=5)
-        thrower1Axe3DownButton = Button(thrower1AxeFrame, text=downArrow, font=("ariel", 7, "bold"))
-        thrower1Axe3DownButton.grid(row=3, column=3, pady=5)
-        thrower1Axe4DownButton = Button(thrower1AxeFrame, text=downArrow, font=("ariel", 7, "bold"))
-        thrower1Axe4DownButton.grid(row=3, column=4, pady=5)
-        thrower1Axe5DownButton = Button(thrower1AxeFrame, text=downArrow, font=("ariel", 7, "bold"))
-        thrower1Axe5DownButton.grid(row=3, column=5, pady=5)
+        for i in range(0, 5):
+            thrower1DownButtons.append(Button(thrower1AxeFrame, text=downArrow, font=("ariel", 7, "bold"), command= lambda i=i: self.change_axe(i, 1, 0)))
+            thrower1DownButtons[i].grid(row=3, column=i+1, pady=5)
         
-    def createThrower2(self,logo):
+    def create_thrower2(self):
 
         thrower2Frame = LabelFrame(self, bg=bgcolour, width=(w/2)-100, height=300, relief=GROOVE, text="Right Thrower", font=("ariel", 16, "bold"))
         thrower2Frame.grid(row=3, column=3, rowspan=3, padx=10)
@@ -170,38 +163,18 @@ class application(Tk):
         thrower2AxeFrame = LabelFrame(thrower2Frame, bg=bgcolour, width=thrower2Frame.winfo_reqwidth()-20, height=100, relief=GROOVE, text="Axes", font=("ariel", 12, "bold"))
         thrower2AxeFrame.grid(row=4, column=2, columnspan=3, padx=5)
 
-        thrower2Axe1UpButton = Button(thrower2AxeFrame, text=upArrow, font=("ariel", 7, "bold"))
-        thrower2Axe1UpButton.grid(row=1, column=1, padx=20, pady=5)
-        thrower2Axe2UpButton = Button(thrower2AxeFrame, text=upArrow, font=("ariel", 7, "bold"))
-        thrower2Axe2UpButton.grid(row=1, column=2, padx=20, pady=5)
-        thrower2Axe3UpButton = Button(thrower2AxeFrame, text=upArrow, font=("ariel", 7, "bold"))
-        thrower2Axe3UpButton.grid(row=1, column=3, padx=20, pady=5)
-        thrower2Axe4UpButton = Button(thrower2AxeFrame, text=upArrow, font=("ariel", 7, "bold"))
-        thrower2Axe4UpButton.grid(row=1, column=4, padx=20, pady=5)
-        thrower2Axe5UpButton = Button(thrower2AxeFrame, text=upArrow, font=("ariel", 7, "bold"))
-        thrower2Axe5UpButton.grid(row=1, column=5, padx=20, pady=5)
+        for i in range(0, 5):
+            thrower2UpButtons.append(Button(thrower2AxeFrame, text=upArrow, font=("ariel", 7, "bold"), command= lambda i=i: self.change_axe(i, 0, 1)))
+            thrower2UpButtons[i].grid(row=1, column=i + 1, padx=20, pady=5)
 
-        thrower2Axe1Box = Entry(thrower2AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN, borderwidth=2)
-        thrower2Axe1Box.grid(row=2, column=1, pady=5)
-        thrower2Axe2Box = Entry(thrower2AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN, borderwidth=2)
-        thrower2Axe2Box.grid(row=2, column=2, pady=5)
-        thrower2Axe3Box = Entry(thrower2AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN, borderwidth=2)
-        thrower2Axe3Box.grid(row=2, column=3, pady=5)
-        thrower2Axe4Box = Entry(thrower2AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN, borderwidth=2)
-        thrower2Axe4Box.grid(row=2, column=4, pady=5)
-        thrower2Axe5Box = Entry(thrower2AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN, borderwidth=2)
-        thrower2Axe5Box.grid(row=2, column=5, pady=5)
+        for i in range(0, 5):
+            thrower2AxeBoxes.append(Entry(thrower2AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
+                                borderwidth=2))
+            thrower2AxeBoxes[i].grid(row=2, column=i+1, pady=5)
 
-        thrower2Axe1DownButton = Button(thrower2AxeFrame, text=downArrow, font=("ariel", 7, "bold"))
-        thrower2Axe1DownButton.grid(row=3, column=1, pady=5)
-        thrower2Axe2DownButton = Button(thrower2AxeFrame, text=downArrow, font=("ariel", 7, "bold"))
-        thrower2Axe2DownButton.grid(row=3, column=2, pady=5)
-        thrower2Axe3DownButton = Button(thrower2AxeFrame, text=downArrow, font=("ariel", 7, "bold"))
-        thrower2Axe3DownButton.grid(row=3, column=3, pady=5)
-        thrower2Axe4DownButton = Button(thrower2AxeFrame, text=downArrow, font=("ariel", 7, "bold"))
-        thrower2Axe4DownButton.grid(row=3, column=4, pady=5)
-        thrower2Axe5DownButton = Button(thrower2AxeFrame, text=downArrow, font=("ariel", 7, "bold"))
-        thrower2Axe5DownButton.grid(row=3, column=5, pady=5)
+        for i in range(0, 5):
+            thrower2DownButtons.append(Button(thrower2AxeFrame, text=downArrow, font=("ariel", 7, "bold"), command= lambda i=i: self.change_axe(i, 1, 1)))
+            thrower2DownButtons[i].grid(row=3, column=i+1, pady=5)
 
 if __name__ == "__main__":
     app = application(None)
