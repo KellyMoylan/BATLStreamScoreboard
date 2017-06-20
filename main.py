@@ -1,5 +1,6 @@
 __author__ = 'Kelly'
 
+from tkinter import filedialog
 from tkinter import *
 
 w = 1000
@@ -20,16 +21,22 @@ thrower2UpButtons = []
 thrower2AxeBoxes = []
 thrower2DownButtons = []
 
-class application(Tk):
+gameCount = [-1, -1]
 
-    def __init__(self,parent):
-        Tk.__init__(self,parent)
+gameBox = []
+
+
+class application(Tk):
+    def __init__(self, parent):
+        Tk.__init__(self, parent)
         self.parent = parent
         # self.geometry(str(w) + "x" + str(h))
         self.resizable(width=False, height=False)
         self.configure(background=bgcolour)
         self.initialize()
         self.update_axes()
+        self.change_game_count(0, 1)
+        self.change_game_count(1, 1)
 
     def initialize(self):
         logo = PhotoImage(file="images/batllogo.gif")
@@ -39,16 +46,18 @@ class application(Tk):
 
         pathSetEntry = Entry(self, width=60, font=('ariel', 10, 'bold'), relief=SUNKEN, borderwidth=3)
         pathSetEntry.grid(row=1, column=2, columnspan=2, sticky=W)
-        pathSetButton = Button(self, text="Set")
+        pathSetButton = Button(self, text="Set", command= lambda: self.set_folder())
         pathSetButton.grid(row=1, column=3, sticky=E)
 
-        matchTitleLabelFrame = LabelFrame(self, bg=bgcolour, width=1000, text="Match", relief=GROOVE, font=("ariel", 16, "bold"))
+        matchTitleLabelFrame = LabelFrame(self, bg=bgcolour, width=1000, text="Match", relief=GROOVE,
+                                          font=("ariel", 16, "bold"))
         matchTitleLabelFrame.grid(row=2, column=1, columnspan=3, padx=50)
 
-        matchTitleEntry =  Entry(matchTitleLabelFrame, width=40, font=('ariel', 10, 'bold'), relief=SUNKEN, borderwidth=3)
+        matchTitleEntry = Entry(matchTitleLabelFrame, width=40, font=('ariel', 10, 'bold'), relief=SUNKEN,
+                                borderwidth=3)
         matchTitleButton = Button(matchTitleLabelFrame, text="Set")
 
-        matchTitleEntry.grid(row=2, column=2, sticky=E, padx=(100,0))
+        matchTitleEntry.grid(row=2, column=2, sticky=E, padx=(100, 0))
         matchTitleButton.grid(row=2, column=3, sticky=W, padx=(0, 100))
 
         self.create_thrower1()
@@ -59,40 +68,49 @@ class application(Tk):
         resetButton = Button(self, text="RESET")
         resetButton.grid(row=4, column=2)
         updateButton = Button(self, text="UPDATE", width=60, height=2, font=('ariel', 16, 'bold'))
-        updateButton.grid(row=6,column=1,columnspan = 3, pady=5)
+        updateButton.grid(row=6, column=1, columnspan=3, pady=5)
         nextGameButton = Button(self, text="Next Game", width=60, height=2, font=('ariel', 16, 'bold'))
-        nextGameButton.grid(row=7, column=1, columnspan = 3, pady=5)
+        nextGameButton.grid(row=7, column=1, columnspan=3, pady=5)
 
     def update_axes(self):
-        for i in range(0,thrower1AxeBoxes.__len__()):
+        for i in range(0, thrower1AxeBoxes.__len__()):
             thrower1AxeBoxes[i].delete(0, 'end')
-            thrower1AxeBoxes[i].insert(0,throwList[leftAxes[i]])
+            thrower1AxeBoxes[i].insert(0, throwList[leftAxes[i]])
         for i in range(0, thrower2AxeBoxes.__len__()):
             thrower2AxeBoxes[i].delete(0, 'end')
-            thrower2AxeBoxes[i].insert(0,throwList[rightAxes[i]])
+            thrower2AxeBoxes[i].insert(0, throwList[rightAxes[i]])
 
     def change_axe(self, position, direction, side):
-        if(direction == 0):
-            if(side == 0):
-                if(leftAxes[position] < 6):
+        if (direction == 0):
+            if (side == 0):
+                if (leftAxes[position] < 6):
                     leftAxes[position] += 1
                     self.update_axes()
             else:
-                if(rightAxes[position] < 6):
+                if (rightAxes[position] < 6):
                     rightAxes[position] += 1
                     self.update_axes()
         else:
             if (side == 0):
-                if(leftAxes[position] > 0):
+                if (leftAxes[position] > 0):
                     leftAxes[position] -= 1
                     self.update_axes()
             else:
-                if(rightAxes[position] > 0):
+                if (rightAxes[position] > 0):
                     rightAxes[position] -= 1
                     self.update_axes()
 
+    def change_game_count(self, side, direction):
+        gameCount[side] += direction
+        gameBox[side].delete(0, 'end')
+        gameBox[side].insert(0, gameCount[side])
+
+    def set_folder(self):
+        filePath = filedialog.askdirectory()
+
     def create_thrower1(self):
-        thrower1Frame = LabelFrame(self, bg=bgcolour, width=(w / 2) - 100, height=300, relief=GROOVE, text="Left Thrower", font=("ariel", 16, "bold"))
+        thrower1Frame = LabelFrame(self, bg=bgcolour, width=(w / 2) - 100, height=300, relief=GROOVE,
+                                   text="Left Thrower", font=("ariel", 16, "bold"))
         thrower1Frame.grid(row=3, column=1, rowspan=3, padx=10)
 
         thrower1NameLabel = Label(thrower1Frame, bg=bgcolour, text="Name:")
@@ -107,14 +125,16 @@ class application(Tk):
         thrower1GameLabel = Label(thrower1Frame, font=('ariel', 10, 'bold'), bg=bgcolour, text="Game Count")
         thrower1GameLabel.grid(row=2, column=3)
 
-        thrower1GameCount = Entry(thrower1Frame, width=5, font=('ariel', 30, 'bold'), justify=CENTER, relief=SUNKEN,
-                                  borderwidth=3)
-        thrower1GameCount.grid(row=3, column=3)
+        gameBox.append(Entry(thrower1Frame, width=5, font=('ariel', 30, 'bold'), justify=CENTER, relief=SUNKEN,
+                             borderwidth=3))
+        gameBox[0].grid(row=3, column=3)
 
-        thrower1GameCountPlus = Button(thrower1Frame, text="+", width=2, height=2)
+        thrower1GameCountPlus = Button(thrower1Frame, text="+", width=2, height=2,
+                                       command=lambda: self.change_game_count(0, 1))
         thrower1GameCountPlus.grid(row=3, column=3, sticky=E)
 
-        thrower1GameCountMinus = Button(thrower1Frame, text="-", width=2, height=2)
+        thrower1GameCountMinus = Button(thrower1Frame, text="-", width=2, height=2,
+                                        command=lambda: self.change_game_count(0, -1))
         thrower1GameCountMinus.grid(row=3, column=3, sticky=W)
 
         thrower1AxeFrame = LabelFrame(thrower1Frame, bg=bgcolour, width=thrower1Frame.winfo_reqwidth() - 20, height=100,
@@ -122,25 +142,29 @@ class application(Tk):
         thrower1AxeFrame.grid(row=4, column=2, columnspan=3, padx=5)
 
         for i in range(0, 5):
-            thrower1UpButtons.append(Button(thrower1AxeFrame, text=upArrow, font=("ariel", 7, "bold"), command= lambda i=i: self.change_axe(i, 0, 0)))
-            thrower1UpButtons[i].grid(row=1, column=i+1, padx=20, pady=5)
+            thrower1UpButtons.append(Button(thrower1AxeFrame, text=upArrow, font=("ariel", 7, "bold"),
+                                            command=lambda i=i: self.change_axe(i, 0, 0)))
+            thrower1UpButtons[i].grid(row=1, column=i + 1, padx=20, pady=5)
 
         for i in range(0, 5):
-            thrower1AxeBoxes.append(Entry(thrower1AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
-                                borderwidth=2))
-            thrower1AxeBoxes[i].grid(row=2, column=i+1, pady=5)
+            thrower1AxeBoxes.append(
+                Entry(thrower1AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
+                      borderwidth=2))
+            thrower1AxeBoxes[i].grid(row=2, column=i + 1, pady=5)
 
         for i in range(0, 5):
-            thrower1DownButtons.append(Button(thrower1AxeFrame, text=downArrow, font=("ariel", 7, "bold"), command= lambda i=i: self.change_axe(i, 1, 0)))
-            thrower1DownButtons[i].grid(row=3, column=i+1, pady=5)
-        
+            thrower1DownButtons.append(Button(thrower1AxeFrame, text=downArrow, font=("ariel", 7, "bold"),
+                                              command=lambda i=i: self.change_axe(i, 1, 0)))
+            thrower1DownButtons[i].grid(row=3, column=i + 1, pady=5)
+
     def create_thrower2(self):
 
-        thrower2Frame = LabelFrame(self, bg=bgcolour, width=(w/2)-100, height=300, relief=GROOVE, text="Right Thrower", font=("ariel", 16, "bold"))
+        thrower2Frame = LabelFrame(self, bg=bgcolour, width=(w / 2) - 100, height=300, relief=GROOVE,
+                                   text="Right Thrower", font=("ariel", 16, "bold"))
         thrower2Frame.grid(row=3, column=3, rowspan=3, padx=10)
 
         thrower2NameLabel = Label(thrower2Frame, bg=bgcolour, text="Name:")
-        thrower2NameLabel.grid(row=1,column=2, padx=10)
+        thrower2NameLabel.grid(row=1, column=2, padx=10)
 
         thrower2NameEntry = Entry(thrower2Frame, width=40)
         thrower2NameEntry.grid(row=1, column=3)
@@ -151,30 +175,38 @@ class application(Tk):
         thrower2GameLabel = Label(thrower2Frame, font=('ariel', 10, 'bold'), bg=bgcolour, text="Game Count")
         thrower2GameLabel.grid(row=2, column=3)
 
-        thrower2GameCount = Entry(thrower2Frame, width=5, font=('ariel', 30, 'bold'), justify=CENTER, relief=SUNKEN, borderwidth=3)
-        thrower2GameCount.grid(row=3, column=3)
+        gameBox.append(
+            Entry(thrower2Frame, width=5, font=('ariel', 30, 'bold'), justify=CENTER, relief=SUNKEN, borderwidth=3))
+        gameBox[1].grid(row=3, column=3)
 
-        thrower2GameCountPlus = Button(thrower2Frame, text="+", width=2, height=2)
+        thrower2GameCountPlus = Button(thrower2Frame, text="+", width=2, height=2,
+                                       command=lambda: self.change_game_count(1, 1))
         thrower2GameCountPlus.grid(row=3, column=3, sticky=E)
 
-        thrower2GameCountMinus = Button(thrower2Frame, text="-", width=2, height=2)
+        thrower2GameCountMinus = Button(thrower2Frame, text="-", width=2, height=2,
+                                        command=lambda: self.change_game_count(1, -1))
         thrower2GameCountMinus.grid(row=3, column=3, sticky=W)
 
-        thrower2AxeFrame = LabelFrame(thrower2Frame, bg=bgcolour, width=thrower2Frame.winfo_reqwidth()-20, height=100, relief=GROOVE, text="Axes", font=("ariel", 12, "bold"))
+        thrower2AxeFrame = LabelFrame(thrower2Frame, bg=bgcolour, width=thrower2Frame.winfo_reqwidth() - 20, height=100,
+                                      relief=GROOVE, text="Axes", font=("ariel", 12, "bold"))
         thrower2AxeFrame.grid(row=4, column=2, columnspan=3, padx=5)
 
         for i in range(0, 5):
-            thrower2UpButtons.append(Button(thrower2AxeFrame, text=upArrow, font=("ariel", 7, "bold"), command= lambda i=i: self.change_axe(i, 0, 1)))
+            thrower2UpButtons.append(Button(thrower2AxeFrame, text=upArrow, font=("ariel", 7, "bold"),
+                                            command=lambda i=i: self.change_axe(i, 0, 1)))
             thrower2UpButtons[i].grid(row=1, column=i + 1, padx=20, pady=5)
 
         for i in range(0, 5):
-            thrower2AxeBoxes.append(Entry(thrower2AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
-                                borderwidth=2))
-            thrower2AxeBoxes[i].grid(row=2, column=i+1, pady=5)
+            thrower2AxeBoxes.append(
+                Entry(thrower2AxeFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
+                      borderwidth=2))
+            thrower2AxeBoxes[i].grid(row=2, column=i + 1, pady=5)
 
         for i in range(0, 5):
-            thrower2DownButtons.append(Button(thrower2AxeFrame, text=downArrow, font=("ariel", 7, "bold"), command= lambda i=i: self.change_axe(i, 1, 1)))
-            thrower2DownButtons[i].grid(row=3, column=i+1, pady=5)
+            thrower2DownButtons.append(Button(thrower2AxeFrame, text=downArrow, font=("ariel", 7, "bold"),
+                                              command=lambda i=i: self.change_axe(i, 1, 1)))
+            thrower2DownButtons[i].grid(row=3, column=i + 1, pady=5)
+
 
 if __name__ == "__main__":
     app = application(None)
