@@ -13,8 +13,7 @@ folderPath = ""
 leftAxes = [0, 0, 0, 0, 0]
 rightAxes = [0, 0, 0, 0, 0]
 
-thrower1Name = ""
-thrower2Name = ""
+throwerNames = []
 
 thrower1UpButtons = []
 thrower1AxeBoxes = []
@@ -28,6 +27,9 @@ gameCount = [-1, -1]
 
 gameBox = []
 
+matchTitleEntry = ""
+
+pathSetEntry = ""
 
 class application(Tk):
     def __init__(self, parent):
@@ -47,6 +49,7 @@ class application(Tk):
         w1.image = logo
         w1.grid(row=1, column=1)
 
+        global pathSetEntry
         pathSetEntry = Entry(self, width=60, font=('ariel', 10, 'bold'), relief=SUNKEN, borderwidth=3)
         pathSetEntry.grid(row=1, column=2, columnspan=2, sticky=W)
         pathSetButton = Button(self, text="...", command= lambda: self.set_folder())
@@ -55,6 +58,8 @@ class application(Tk):
         matchTitleLabelFrame = LabelFrame(self, bg=bgcolour, width=1000, text="Match", relief=GROOVE,
                                           font=("ariel", 16, "bold"))
         matchTitleLabelFrame.grid(row=2, column=1, columnspan=3, padx=50)
+
+        global matchTitleEntry
 
         matchTitleEntry = Entry(matchTitleLabelFrame, width=40, font=('ariel', 10, 'bold'), relief=SUNKEN,
                                 borderwidth=3)
@@ -66,13 +71,13 @@ class application(Tk):
         self.create_thrower1()
         self.create_thrower2()
 
-        switchButton = Button(self, text="<- SWITCH ->")
+        switchButton = Button(self, text="<- SWITCH ->", command= lambda: self.switch_sides())
         switchButton.grid(row=3, column=2, padx=20)
         resetButton = Button(self, text="RESET")
         resetButton.grid(row=4, column=2)
         updateButton = Button(self, text="UPDATE", width=60, height=2, font=('ariel', 16, 'bold'), command= lambda: self.update_files())
         updateButton.grid(row=6, column=1, columnspan=3, pady=5)
-        nextGameButton = Button(self, text="Next Game", width=60, height=2, font=('ariel', 16, 'bold'))
+        nextGameButton = Button(self, text="Next Game", width=60, height=2, font=('ariel', 16, 'bold'), command= lambda: self.next_game())
         nextGameButton.grid(row=7, column=1, columnspan=3, pady=5)
 
     def update_axes(self):
@@ -109,56 +114,95 @@ class application(Tk):
         gameBox[side].insert(0, gameCount[side])
 
     def set_folder(self):
+        global folderPath
         folderPath = filedialog.askdirectory()
+        pathSetEntry.delete(0, 'end')
+        pathSetEntry.insert(0, folderPath)
+
+    def switch_sides(self):
+        self.switch_info()
+        self.update_files()
+
+    def next_game(self):
+        self.switch_info()
+        self.reset_axes()
+        self.update_files()
+
+    def switch_info(self):
+        gameCount[0], gameCount[1] = gameCount[1], gameCount[0]
+        self.change_game_count(0, 0)
+        self.change_game_count(1, 0)
+        temp = throwerNames[0].get()
+        throwerNames[0].delete(0, 'end')
+        throwerNames[0].insert(0, throwerNames[1].get())
+        throwerNames[1].delete(0, 'end')
+        throwerNames[1].insert(0, temp)
+        global leftAxes
+        global rightAxes
+        leftAxes, rightAxes = rightAxes, leftAxes
+        self.update_axes()
+
+    def reset_axes(self):
+        global leftAxes
+        global rightAxes
+        leftAxes = [0,0,0,0,0]
+        rightAxes = [0,0,0,0,0]
+        self.update_axes()
 
     def update_files(self):
+        # Match Name
+        global folderPath
+        file = open(folderPath + "/match_title.txt","w")
+        file.write(matchTitleEntry.get())
+        file.close()
+
         # Game counts
-        file = open(folderPath + "thrower_1_game_count.txt", "w")
+        file = open(folderPath + "/thrower_1_game_count.txt", "w")
         file.write(str(gameCount[0]))
         file.close()
-        file = open(folderPath + "thrower_2_game_count.txt", "w")
+        file = open(folderPath + "/thrower_2_game_count.txt", "w")
         file.write(str(gameCount[1]))
         file.close()
 
         # Player Names
-        file = open(folderPath + "thrower_1_name.txt", "w")
-        file.write(thrower1Name)
+        file = open(folderPath + "/thrower_1_name.txt", "w")
+        file.write(throwerNames[0].get())
         file.close()
-        file = open(folderPath + "thrower_2_name.txt", "w")
-        file.write(thrower2Name)
+        file = open(folderPath + "/thrower_2_name.txt", "w")
+        file.write(throwerNames[1].get())
         file.close()
 
         # Thrower 1 axes
-        file = open(folderPath + "thrower_1_axe_1.txt", "w")
+        file = open(folderPath + "/thrower_1_axe_1.txt", "w")
         file.write(str(throwList[leftAxes[0]]))
         file.close()
-        file = open(folderPath + "thrower_1_axe_2.txt", "w")
+        file = open(folderPath + "/thrower_1_axe_2.txt", "w")
         file.write(str(throwList[leftAxes[1]]))
         file.close()
-        file = open(folderPath + "thrower_1_axe_3.txt", "w")
+        file = open(folderPath + "/thrower_1_axe_3.txt", "w")
         file.write(str(throwList[leftAxes[2]]))
         file.close()
-        file = open(folderPath + "thrower_1_axe_4.txt", "w")
+        file = open(folderPath + "/thrower_1_axe_4.txt", "w")
         file.write(str(throwList[leftAxes[3]]))
         file.close()
-        file = open(folderPath + "thrower_1_axe_5.txt", "w")
+        file = open(folderPath + "/thrower_1_axe_5.txt", "w")
         file.write(str(throwList[leftAxes[4]]))
         file.close()
 
         # Thrower 2 axes
-        file = open(folderPath + "thrower_2_axe_1.txt", "w")
+        file = open(folderPath + "/thrower_2_axe_1.txt", "w")
         file.write(str(throwList[rightAxes[0]]))
         file.close()
-        file = open(folderPath + "thrower_2_axe_2.txt", "w")
+        file = open(folderPath + "/thrower_2_axe_2.txt", "w")
         file.write(str(throwList[rightAxes[1]]))
         file.close()
-        file = open(folderPath + "thrower_2_axe_3.txt", "w")
+        file = open(folderPath + "/thrower_2_axe_3.txt", "w")
         file.write(str(throwList[rightAxes[2]]))
         file.close()
-        file = open(folderPath + "thrower_2_axe_4.txt", "w")
+        file = open(folderPath + "/thrower_2_axe_4.txt", "w")
         file.write(str(throwList[rightAxes[3]]))
         file.close()
-        file = open(folderPath + "thrower_2_axe_5.txt", "w")
+        file = open(folderPath + "/thrower_2_axe_5.txt", "w")
         file.write(str(throwList[rightAxes[4]]))
         file.close()
 
@@ -170,8 +214,8 @@ class application(Tk):
         thrower1NameLabel = Label(thrower1Frame, bg=bgcolour, text="Name:")
         thrower1NameLabel.grid(row=1, column=2, padx=10)
 
-        thrower1NameEntry = Entry(thrower1Frame, width=40)
-        thrower1NameEntry.grid(row=1, column=3)
+        throwerNames.append(Entry(thrower1Frame, width=40))
+        throwerNames[0].grid(row=1, column=3)
 
         thrower1NameButton = Button(thrower1Frame, text="SET")
         thrower1NameButton.grid(row=1, column=4, padx=10)
@@ -220,8 +264,8 @@ class application(Tk):
         thrower2NameLabel = Label(thrower2Frame, bg=bgcolour, text="Name:")
         thrower2NameLabel.grid(row=1, column=2, padx=10)
 
-        thrower2NameEntry = Entry(thrower2Frame, width=40)
-        thrower2NameEntry.grid(row=1, column=3)
+        throwerNames.append(Entry(thrower2Frame, width=40))
+        throwerNames[1].grid(row=1, column=3)
 
         thrower2NameButton = Button(thrower2Frame, text="SET")
         thrower2NameButton.grid(row=1, column=4, padx=10)
