@@ -13,6 +13,8 @@ folderPath = ""
 leftAxes = [0, 0, 0, 0, 0]
 rightAxes = [0, 0, 0, 0, 0]
 
+
+
 throwerNames = []
 
 thrower1UpButtons = []
@@ -73,7 +75,7 @@ class application(Tk):
 
         switchButton = Button(self, text="<- SWITCH ->", command= lambda: self.switch_sides())
         switchButton.grid(row=3, column=2, padx=20)
-        resetButton = Button(self, text="RESET")
+        resetButton = Button(self, text="RESET", command = lambda: self.reset_info())
         resetButton.grid(row=4, column=2)
         updateButton = Button(self, text="UPDATE", width=60, height=2, font=('ariel', 16, 'bold'), command= lambda: self.update_files())
         updateButton.grid(row=6, column=1, columnspan=3, pady=5)
@@ -141,6 +143,17 @@ class application(Tk):
         global rightAxes
         leftAxes, rightAxes = rightAxes, leftAxes
         self.update_axes()
+
+    def reset_info(self):
+        self.reset_axes()
+        gameCount[0] = 0
+        gameCount[1] = 0
+        self.change_game_count(0,0)
+        self.change_game_count(1,0)
+        throwerNames[0].delete(0, 'end')
+        throwerNames[1].delete(0, 'end')
+        global matchTitleEntry
+        matchTitleEntry.delete(0, 'end')
 
     def reset_axes(self):
         global leftAxes
