@@ -8,12 +8,14 @@ h = 600
 bgcolour = "white"
 upArrow = u"\u25B2"
 downArrow = u"\u25BC"
+checkmark = u"\u2713"
 throwList = ['-', 'D', '0', '1', '3', '5', '7']
+bigAxeThrowList = ['-', u"\u2713", u"\u2717"]
 folderPath = ""
 leftAxes = [0, 0, 0, 0, 0]
 rightAxes = [0, 0, 0, 0, 0]
-
-
+leftBigAxes = [0, 0, 0, 0]
+rightBigAxes = [0, 0, 0, 0]
 
 throwerNames = []
 
@@ -24,6 +26,16 @@ thrower1DownButtons = []
 thrower2UpButtons = []
 thrower2AxeBoxes = []
 thrower2DownButtons = []
+
+thrower1BigUpButtons = []
+thrower1BigAxeBoxes = []
+thrower1BigDownButtons = []
+
+thrower2BigUpButtons = []
+thrower2BigAxeBoxes = []
+thrower2BigDownButtons = []
+
+clutchCalls = []
 
 gameCount = [-1, -1]
 
@@ -42,6 +54,7 @@ class application(Tk):
         self.configure(background=bgcolour)
         self.initialize()
         self.update_axes()
+        self.update_big_axes()
         self.change_game_count(0, 1)
         self.change_game_count(1, 1)
 
@@ -90,30 +103,65 @@ class application(Tk):
             thrower2AxeBoxes[i].delete(0, 'end')
             thrower2AxeBoxes[i].insert(0, throwList[rightAxes[i]])
 
+    def update_big_axes(self):
+        for i in range(0, thrower1BigAxeBoxes.__len__()):
+            thrower1BigAxeBoxes[i].delete(0, 'end')
+            if(i != 3):
+                thrower1BigAxeBoxes[i].insert(0, bigAxeThrowList[leftBigAxes[i]])
+            else:
+                thrower1BigAxeBoxes[i].insert(0, throwList[leftBigAxes[i]])
+        for i in range(0, thrower2BigAxeBoxes.__len__()):
+            thrower2BigAxeBoxes[i].delete(0, 'end')
+            if(i != 3):
+                thrower2BigAxeBoxes[i].insert(0, bigAxeThrowList[rightBigAxes[i]])
+            else:
+                thrower2BigAxeBoxes[i].insert(0, throwList[rightBigAxes[i]])
+
     def change_axe(self, position, direction, side):
-        if (direction == 0):
+        if (position != 4):
             if (side == 0):
-                if (leftAxes[position] < 6):
-                    leftAxes[position] += 1
+                if ((direction == 1 and leftAxes[position] < len(throwList)-2) or (direction == -1 and leftAxes[position] > 0)):
+                    leftAxes[position] += direction
                     self.update_axes()
             else:
-                if (rightAxes[position] < 6):
-                    rightAxes[position] += 1
+                if ((direction == 1 and rightAxes[position] < len(throwList)-2) or (direction == -1 and rightAxes[position] > 0)):
+                    rightAxes[position] += direction
                     self.update_axes()
         else:
             if (side == 0):
-                if (leftAxes[position] > 0):
-                    leftAxes[position] -= 1
+                if ((direction == 1 and leftAxes[position] < len(throwList)-1) or (direction == -1 and leftAxes[position] > 0)):
+                    leftAxes[position] += direction
                     self.update_axes()
             else:
-                if (rightAxes[position] > 0):
-                    rightAxes[position] -= 1
+                if ((direction == 1 and rightAxes[position] < len(throwList)-1) or (direction == -1 and rightAxes[position] > 0)):
+                    rightAxes[position] += direction
                     self.update_axes()
 
+    def change_big_axe(self, position, direction, side):
+        if (position != 3):
+            if (side == 0):
+                if ((direction == 1 and leftBigAxes[position] < len(bigAxeThrowList)-1) or (direction == -1 and leftBigAxes[position] > 0)):
+                    leftBigAxes[position] += direction
+                    self.update_big_axes()
+            else:
+                if ((direction == 1 and rightBigAxes[position] < len(bigAxeThrowList)-1) or (direction == -1 and rightBigAxes[position] > 0)):
+                    rightBigAxes[position] += direction
+                    self.update_big_axes()
+        else:
+            if (side == 0):
+                if ((direction == 1 and leftBigAxes[position] < len(throwList)-1) or (direction == -1 and leftBigAxes[position] > 0)):
+                    leftBigAxes[position] += direction
+                    self.update_big_axes()
+            else:
+                if ((direction == 1 and rightBigAxes[position] < len(throwList)-1) or (direction == -1 and rightBigAxes[position] > 0)):
+                    rightBigAxes[position] += direction
+                    self.update_big_axes()
+
     def change_game_count(self, side, direction):
-        gameCount[side] += direction
-        gameBox[side].delete(0, 'end')
-        gameBox[side].insert(0, gameCount[side])
+        if (gameCount[side] != 0 or direction == 1):
+            gameCount[side] += direction
+            gameBox[side].delete(0, 'end')
+            gameBox[side].insert(0, gameCount[side])
 
     def set_folder(self):
         global folderPath
@@ -254,7 +302,7 @@ class application(Tk):
 
         for i in range(0, 5):
             thrower1UpButtons.append(Button(thrower1AxeFrame, text=upArrow, font=("ariel", 7, "bold"),
-                                            command=lambda i=i: self.change_axe(i, 0, 0)))
+                                            command=lambda i=i: self.change_axe(i, 1, 0)))
             thrower1UpButtons[i].grid(row=1, column=i + 1, padx=20, pady=5)
 
         for i in range(0, 5):
@@ -265,8 +313,57 @@ class application(Tk):
 
         for i in range(0, 5):
             thrower1DownButtons.append(Button(thrower1AxeFrame, text=downArrow, font=("ariel", 7, "bold"),
-                                              command=lambda i=i: self.change_axe(i, 1, 0)))
+                                              command=lambda i=i: self.change_axe(i, -1, 0)))
             thrower1DownButtons[i].grid(row=3, column=i + 1, pady=5)
+
+        clutchCalls.append(Checkbutton(thrower1Frame, bg=bgcolour, text="CLUTCH", font=("ariel", 12, "bold")))
+
+        clutchCalls[0].grid(row=5, column=3)
+
+        thrower1BigAxeFrame = LabelFrame(thrower1Frame, bg=bgcolour, width=thrower1Frame.winfo_reqwidth() - 20, height=100,
+                                      relief=GROOVE, text="Big Axe", font=("ariel", 12, "bold"))
+        thrower1BigAxeFrame.grid(row=6, column=2, columnspan=3, padx=5)
+
+        thrower1BigAxePaintFrame = LabelFrame(thrower1BigAxeFrame, bg=bgcolour, width=thrower1Frame.winfo_reqwidth() - 20, height=100,
+                                      relief=GROOVE, text="Paint", font=("ariel", 12, "bold"))
+        thrower1BigAxePaintFrame.grid(row=1, column=1, columnspan=1, padx=5)
+
+        for i in range(0, 3):
+            thrower1BigUpButtons.append(Button(thrower1BigAxePaintFrame, text=upArrow, font=("ariel", 7, "bold"),
+                                            command=lambda i=i: self.change_big_axe(i, 1, 0)))
+            thrower1BigUpButtons[i].grid(row=1, column=i + 1, padx=20, pady=5)
+
+        for i in range(0, 3):
+            thrower1BigAxeBoxes.append(
+                Entry(thrower1BigAxePaintFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
+                      borderwidth=2))
+            thrower1BigAxeBoxes[i].grid(row=2, column=i + 1, pady=5)
+
+        for i in range(0, 3):
+            thrower1BigDownButtons.append(Button(thrower1BigAxePaintFrame, text=downArrow, font=("ariel", 7, "bold"),
+                                              command=lambda i=i: self.change_big_axe(i, -1, 0)))
+            thrower1BigDownButtons[i].grid(row=3, column=i + 1, pady=5)
+
+        thrower1BigAxePointFrame = LabelFrame(thrower1BigAxeFrame, bg=bgcolour,
+                                              width=thrower1Frame.winfo_reqwidth() - 20, height=100,
+                                              relief=GROOVE, text="Points", font=("ariel", 12, "bold"))
+        thrower1BigAxePointFrame.grid(row=1, column=2, columnspan=1, padx=5)
+
+        for i in range(0, 1):
+            thrower1BigUpButtons.append(Button(thrower1BigAxePointFrame, text=upArrow, font=("ariel", 7, "bold"),
+                                            command=lambda i=i: self.change_big_axe(3, 1, 0)))
+            thrower1BigUpButtons[3].grid(row=1, column=i + 1, padx=20, pady=5)
+
+        for i in range(0, 1):
+            thrower1BigAxeBoxes.append(
+                Entry(thrower1BigAxePointFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
+                      borderwidth=2))
+            thrower1BigAxeBoxes[3].grid(row=2, column=i + 1, pady=5)
+
+        for i in range(0, 1):
+            thrower1BigDownButtons.append(Button(thrower1BigAxePointFrame, text=downArrow, font=("ariel", 7, "bold"),
+                                              command=lambda i=i: self.change_big_axe(3, -1, 0)))
+            thrower1BigDownButtons[3].grid(row=3, column=i + 1, pady=5)
 
     def create_thrower2(self):
 
@@ -304,7 +401,7 @@ class application(Tk):
 
         for i in range(0, 5):
             thrower2UpButtons.append(Button(thrower2AxeFrame, text=upArrow, font=("ariel", 7, "bold"),
-                                            command=lambda i=i: self.change_axe(i, 0, 1)))
+                                            command=lambda i=i: self.change_axe(i, 1, 1)))
             thrower2UpButtons[i].grid(row=1, column=i + 1, padx=20, pady=5)
 
         for i in range(0, 5):
@@ -315,10 +412,53 @@ class application(Tk):
 
         for i in range(0, 5):
             thrower2DownButtons.append(Button(thrower2AxeFrame, text=downArrow, font=("ariel", 7, "bold"),
-                                              command=lambda i=i: self.change_axe(i, 1, 1)))
+                                              command=lambda i=i: self.change_axe(i, -1, 1)))
             thrower2DownButtons[i].grid(row=3, column=i + 1, pady=5)
 
+        thrower2BigAxeFrame = LabelFrame(thrower2Frame, bg=bgcolour, width=thrower2Frame.winfo_reqwidth() - 20, height=100,
+                                      relief=GROOVE, text="Big Axe", font=("ariel", 12, "bold"))
+        thrower2BigAxeFrame.grid(row=5, column=2, columnspan=3, padx=5)
 
+        thrower2BigAxePaintFrame = LabelFrame(thrower2BigAxeFrame, bg=bgcolour, width=thrower2Frame.winfo_reqwidth() - 20, height=100,
+                                      relief=GROOVE, text="Paint", font=("ariel", 12, "bold"))
+        thrower2BigAxePaintFrame.grid(row=1, column=1, columnspan=1, padx=5)
+
+        for i in range(0, 3):
+            thrower2BigUpButtons.append(Button(thrower2BigAxePaintFrame, text=upArrow, font=("ariel", 7, "bold"),
+                                            command=lambda i=i: self.change_big_axe(i, 1, 1)))
+            thrower2BigUpButtons[i].grid(row=1, column=i + 1, padx=20, pady=5)
+
+        for i in range(0, 3):
+            thrower2BigAxeBoxes.append(
+                Entry(thrower2BigAxePaintFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
+                      borderwidth=2))
+            thrower2BigAxeBoxes[i].grid(row=2, column=i + 1, pady=5)
+
+        for i in range(0, 3):
+            thrower2BigDownButtons.append(Button(thrower2BigAxePaintFrame, text=downArrow, font=("ariel", 7, "bold"),
+                                              command=lambda i=i: self.change_big_axe(i, -1, 1)))
+            thrower2BigDownButtons[i].grid(row=3, column=i + 1, pady=5)
+
+        thrower2BigAxePointFrame = LabelFrame(thrower2BigAxeFrame, bg=bgcolour,
+                                              width=thrower2Frame.winfo_reqwidth() - 20, height=100,
+                                              relief=GROOVE, text="Points", font=("ariel", 12, "bold"))
+        thrower2BigAxePointFrame.grid(row=1, column=2, columnspan=1, padx=5)
+
+        for i in range(0, 1):
+            thrower2BigUpButtons.append(Button(thrower2BigAxePointFrame, text=upArrow, font=("ariel", 7, "bold"),
+                                            command=lambda i=i: self.change_big_axe(3, 1, 1)))
+            thrower2BigUpButtons[3].grid(row=1, column=i + 1, padx=20, pady=5)
+
+        for i in range(0, 1):
+            thrower2BigAxeBoxes.append(
+                Entry(thrower2BigAxePointFrame, width=2, font=('ariel', 12, 'bold'), justify=CENTER, relief=SUNKEN,
+                      borderwidth=2))
+            thrower2BigAxeBoxes[3].grid(row=2, column=i + 1, pady=5)
+
+        for i in range(0, 1):
+            thrower2BigDownButtons.append(Button(thrower2BigAxePointFrame, text=downArrow, font=("ariel", 7, "bold"),
+                                              command=lambda i=i: self.change_big_axe(3, -1, 1)))
+            thrower2BigDownButtons[3].grid(row=3, column=i + 1, pady=5)
 if __name__ == "__main__":
     app = application(None)
     app.title('BATL Stream Scoreboard')
