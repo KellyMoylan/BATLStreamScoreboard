@@ -2,6 +2,8 @@ __author__ = 'Kelly'
 
 from tkinter import filedialog
 from tkinter import *
+import os
+
 
 w = 1000
 h = 600
@@ -11,7 +13,7 @@ downArrow = u"\u25BC"
 checkmark = u"\u2713"
 throwList = ['-', 'D', '0', '1', '3', '5', '7']
 bigAxeThrowList = ['-', u"\u2713", u"\u2717"]
-folderPath = ""
+directory = "score_files"
 leftAxes = [0, 0, 0, 0, 0]
 rightAxes = [0, 0, 0, 0, 0]
 leftBigAxes = [0, 0, 0, 0]
@@ -35,8 +37,6 @@ thrower2BigUpButtons = []
 thrower2BigAxeBoxes = []
 thrower2BigDownButtons = []
 
-clutchCalls = []
-
 gameCount = [-1, -1]
 
 gameBox = []
@@ -59,6 +59,9 @@ class application(Tk):
         self.change_game_count(1, 1)
 
     def initialize(self):
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+            
         logo = PhotoImage(file="images/batllogo.gif")
         w1 = Label(self, image=logo, bg=bgcolour)
         w1.image = logo
@@ -102,6 +105,7 @@ class application(Tk):
         for i in range(0, thrower2AxeBoxes.__len__()):
             thrower2AxeBoxes[i].delete(0, 'end')
             thrower2AxeBoxes[i].insert(0, throwList[rightAxes[i]])
+        self.update_files()
 
     def update_big_axes(self):
         for i in range(0, thrower1BigAxeBoxes.__len__()):
@@ -116,6 +120,7 @@ class application(Tk):
                 thrower2BigAxeBoxes[i].insert(0, bigAxeThrowList[rightBigAxes[i]])
             else:
                 thrower2BigAxeBoxes[i].insert(0, throwList[rightBigAxes[i]])
+        self.update_files()
 
     def change_axe(self, position, direction, side):
         if (position != 4):
@@ -162,12 +167,14 @@ class application(Tk):
             gameCount[side] += direction
             gameBox[side].delete(0, 'end')
             gameBox[side].insert(0, gameCount[side])
+            self.update_files()
 
     def set_folder(self):
         global folderPath
         folderPath = filedialog.askdirectory()
         pathSetEntry.delete(0, 'end')
         pathSetEntry.insert(0, folderPath)
+        self.update_files()
 
     def switch_sides(self):
         self.switch_info()
@@ -202,69 +209,100 @@ class application(Tk):
         throwerNames[1].delete(0, 'end')
         global matchTitleEntry
         matchTitleEntry.delete(0, 'end')
+        self.update_files()
 
     def reset_axes(self):
         global leftAxes
         global rightAxes
         leftAxes = [0,0,0,0,0]
         rightAxes = [0,0,0,0,0]
+        leftBigAxes = [0,0,0,0]
+        rightBigAxes = [0,0,0,0]
         self.update_axes()
 
     def update_files(self):
         # Match Name
-        global folderPath
-        file = open(folderPath + "/match_title.txt","w")
+        global directory
+        file = open(directory + "/match_title.txt","w")
         file.write(matchTitleEntry.get())
         file.close()
 
         # Game counts
-        file = open(folderPath + "/thrower_1_game_count.txt", "w")
+        file = open(directory + "/thrower_1_game_count.txt", "w")
         file.write(str(gameCount[0]))
         file.close()
-        file = open(folderPath + "/thrower_2_game_count.txt", "w")
+        file = open(directory + "/thrower_2_game_count.txt", "w")
         file.write(str(gameCount[1]))
         file.close()
 
         # Player Names
-        file = open(folderPath + "/thrower_1_name.txt", "w")
+        file = open(directory + "/thrower_1_name.txt", "w")
         file.write(throwerNames[0].get())
         file.close()
-        file = open(folderPath + "/thrower_2_name.txt", "w")
+        file = open(directory + "/thrower_2_name.txt", "w")
         file.write(throwerNames[1].get())
         file.close()
 
         # Thrower 1 axes
-        file = open(folderPath + "/thrower_1_axe_1.txt", "w")
+        file = open(directory + "/thrower_1_axe_1.txt", "w")
         file.write(str(throwList[leftAxes[0]]))
         file.close()
-        file = open(folderPath + "/thrower_1_axe_2.txt", "w")
+        file = open(directory + "/thrower_1_axe_2.txt", "w")
         file.write(str(throwList[leftAxes[1]]))
         file.close()
-        file = open(folderPath + "/thrower_1_axe_3.txt", "w")
+        file = open(directory + "/thrower_1_axe_3.txt", "w")
         file.write(str(throwList[leftAxes[2]]))
         file.close()
-        file = open(folderPath + "/thrower_1_axe_4.txt", "w")
+        file = open(directory + "/thrower_1_axe_4.txt", "w")
         file.write(str(throwList[leftAxes[3]]))
         file.close()
-        file = open(folderPath + "/thrower_1_axe_5.txt", "w")
+        file = open(directory + "/thrower_1_axe_5.txt", "w")
         file.write(str(throwList[leftAxes[4]]))
         file.close()
 
         # Thrower 2 axes
-        file = open(folderPath + "/thrower_2_axe_1.txt", "w")
+        file = open(directory + "/thrower_2_axe_1.txt", "w")
         file.write(str(throwList[rightAxes[0]]))
         file.close()
-        file = open(folderPath + "/thrower_2_axe_2.txt", "w")
+        file = open(directory + "/thrower_2_axe_2.txt", "w")
         file.write(str(throwList[rightAxes[1]]))
         file.close()
-        file = open(folderPath + "/thrower_2_axe_3.txt", "w")
+        file = open(directory + "/thrower_2_axe_3.txt", "w")
         file.write(str(throwList[rightAxes[2]]))
         file.close()
-        file = open(folderPath + "/thrower_2_axe_4.txt", "w")
+        file = open(directory + "/thrower_2_axe_4.txt", "w")
         file.write(str(throwList[rightAxes[3]]))
         file.close()
-        file = open(folderPath + "/thrower_2_axe_5.txt", "w")
+        file = open(directory + "/thrower_2_axe_5.txt", "w")
         file.write(str(throwList[rightAxes[4]]))
+        file.close()
+
+        # Thrower 1 big axes
+        file = open(directory + "/thrower_1_big_axe_1.txt", "w")
+        file.write(str(bigAxeThrowList[leftBigAxes[0]]))
+        file.close()
+        file = open(directory + "/thrower_1_big_axe_2.txt", "w")
+        file.write(str(bigAxeThrowList[leftBigAxes[1]]))
+        file.close()
+        file = open(directory + "/thrower_1_big_axe_3.txt", "w")
+        file.write(str(bigAxeThrowList[leftBigAxes[2]]))
+        file.close()
+        file = open(directory + "/thrower_1_big_axe_point.txt", "w")
+        file.write(str(throwList[leftBigAxes[3]]))
+        file.close()
+
+        # Thrower 2 big axes
+        file = open(directory + "/thrower_2_big_axe_1.txt", "w")
+        file.write(str(bigAxeThrowList[rightBigAxes[0]]))
+        file.close()
+        file = open(directory + "/thrower_2_big_axe_2.txt", "w")
+        file.write(str(bigAxeThrowList[rightBigAxes[1]]))
+        file.close()
+        file = open(directory + "/thrower_2_big_axe_3.txt", "w")
+        file.write(str(bigAxeThrowList[rightBigAxes[2]]))
+        file.close()
+        file = open(directory + "/thrower_2_big_axe_point.txt", "w")
+        file.write(str(throwList[rightBigAxes[3]]))
         file.close()
 
     def create_thrower1(self):
@@ -315,10 +353,6 @@ class application(Tk):
             thrower1DownButtons.append(Button(thrower1AxeFrame, text=downArrow, font=("ariel", 7, "bold"),
                                               command=lambda i=i: self.change_axe(i, -1, 0)))
             thrower1DownButtons[i].grid(row=3, column=i + 1, pady=5)
-
-        clutchCalls.append(Checkbutton(thrower1Frame, bg=bgcolour, text="CLUTCH", font=("ariel", 12, "bold")))
-
-        clutchCalls[0].grid(row=5, column=3)
 
         thrower1BigAxeFrame = LabelFrame(thrower1Frame, bg=bgcolour, width=thrower1Frame.winfo_reqwidth() - 20, height=100,
                                       relief=GROOVE, text="Big Axe", font=("ariel", 12, "bold"))
@@ -459,6 +493,7 @@ class application(Tk):
             thrower2BigDownButtons.append(Button(thrower2BigAxePointFrame, text=downArrow, font=("ariel", 7, "bold"),
                                               command=lambda i=i: self.change_big_axe(3, -1, 1)))
             thrower2BigDownButtons[3].grid(row=3, column=i + 1, pady=5)
+
 if __name__ == "__main__":
     app = application(None)
     app.title('BATL Stream Scoreboard')
