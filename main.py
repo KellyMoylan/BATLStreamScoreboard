@@ -196,10 +196,16 @@ class application(Tk):
         self.reset_axes()
         self.update_files()
 
+    def update_game_count(self):
+        gameBox[0].delete(0, 'end')
+        gameBox[0].insert(0, gameCount[0])
+        gameBox[1].delete(0, 'end')
+        gameBox[1].insert(0, gameCount[1])
+        self.update_files()
+
     def switch_info(self):
         gameCount[0], gameCount[1] = gameCount[1], gameCount[0]
-        self.change_game_count(0, 0)
-        self.change_game_count(1, 0)
+        self.update_game_count()
         temp = throwerNames[0].get()
         throwerNames[0].delete(0, 'end')
         throwerNames[0].insert(0, throwerNames[1].get())
@@ -516,5 +522,5 @@ class application(Tk):
 
 if __name__ == "__main__":
     app = application(None)
-    app.title('BATL Stream Scoreboard')
+    app.title('Axe Throwing Stream Scoreboard')
     app.mainloop()
