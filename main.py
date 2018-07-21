@@ -215,6 +215,7 @@ class application(Tk):
         global rightAxes
         leftAxes, rightAxes = rightAxes, leftAxes
         self.update_axes()
+        self.update_text()
 
     def reset_info(self):
         self.reset_axes()
@@ -231,11 +232,14 @@ class application(Tk):
     def reset_axes(self):
         global leftAxes
         global rightAxes
+        global leftBigAxes
+        global rightBigAxes
         leftAxes = [0, 0, 0, 0, 0]
         rightAxes = [0, 0, 0, 0, 0]
         leftBigAxes = [0, 0, 0, 0]
         rightBigAxes = [0, 0, 0, 0]
         self.update_axes()
+        self.update_big_axes()
 
     def update_text(self):
         # Match Name
