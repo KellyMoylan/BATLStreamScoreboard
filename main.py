@@ -39,6 +39,8 @@ thrower2BigDownButtons = []
 
 gameCount = [-1, -1]
 
+gameScore = []
+
 gameBox = []
 
 matchTitleEntry = ""
@@ -353,6 +355,10 @@ class application(Tk):
         thrower1GameCountMinus = Button(thrower1Frame, text="-", width=2, height=2,
                                         command=lambda: self.change_game_count(0, -1))
         thrower1GameCountMinus.grid(row=3, column=3, sticky=W)
+
+        gameScore[0].append(Entry(thrower1Frame, width=5, font=('ariel', 30, 'bold'), justify=CENTER, relief=SUNKEN,
+                             borderwidth=3))
+        gameScore[0].grid(row=3, column=3)
 
         thrower1AxeFrame = LabelFrame(thrower1Frame, bg=bgcolour, width=thrower1Frame.winfo_reqwidth() - 20, height=100,
                                       relief=GROOVE, text="Axes", font=("ariel", 12, "bold"))
