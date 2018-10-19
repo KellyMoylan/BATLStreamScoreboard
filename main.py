@@ -63,17 +63,6 @@ class application(Tk):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        # logo = PhotoImage(file="images/batllogo.gif")
-        # w1 = Label(self, image=logo, bg=bgcolour)
-        # w1.image = logo
-        # w1.grid(row=1, column=1)
-        #
-        # global pathSetEntry
-        # pathSetEntry = Entry(self, width=60, font=('ariel', 10, 'bold'), relief=SUNKEN, borderwidth=3)
-        # pathSetEntry.grid(row=1, column=2, columnspan=2, sticky=W)
-        # pathSetButton = Button(self, text="...", command=lambda: self.set_folder())
-        # pathSetButton.grid(row=1, column=3, sticky=E)
-
         matchTitleLabelFrame = LabelFrame(self, bg=bgcolour, width=1000, text="Match", relief=GROOVE,
                                           font=("ariel", 16, "bold"))
         matchTitleLabelFrame.grid(row=2, column=1, columnspan=3, padx=50)
@@ -178,6 +167,12 @@ class application(Tk):
             gameCount[side] += direction
             gameBox[side].delete(0, 'end')
             gameBox[side].insert(0, gameCount[side])
+            self.update_files()
+        elif (direction == 0):
+            gameBox[0].delete(0, 'end')
+            gameBox[0].insert(0, gameCount[0])
+            gameBox[1].delete(0, 'end')
+            gameBox[1].insert(0, gameCount[1])
             self.update_files()
 
     def set_folder(self):
