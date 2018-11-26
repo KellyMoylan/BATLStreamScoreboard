@@ -12,7 +12,7 @@ upArrow = u"\u25B2"
 downArrow = u"\u25BC"
 checkmark = u"\u2713"
 throwList = ['-', 'D', '0', '1', '3', '5', '7']
-bigAxeThrowList = ['-', u"\u2713", u"\u2717"]
+bigAxeThrowList = ['-', u"\u2717", u"\u2713",]
 directory = "score_files"
 leftAxes = [0, 0, 0, 0, 0]
 rightAxes = [0, 0, 0, 0, 0]
@@ -40,6 +40,8 @@ thrower2BigDownButtons = []
 gameCount = [-1, -1]
 
 gameScore = []
+
+score = [0,0]
 
 gameBox = []
 
@@ -99,7 +101,16 @@ class application(Tk):
         for i in range(0, thrower2AxeBoxes.__len__()):
             thrower2AxeBoxes[i].delete(0, 'end')
             thrower2AxeBoxes[i].insert(0, throwList[rightAxes[i]])
+        self.update_game_score()
         self.update_files()
+
+    def update_game_score(self):
+        score[0] = sum([int(x) for x in [throwList[y] for y in leftAxes] if str(x).isdigit()])
+        score[1] = sum([int(x) for x in [throwList[y] for y in rightAxes] if str(x).isdigit()])
+        gameScore[0].delete(0, 'end')
+        gameScore[0].insert(0, score[0])
+        gameScore[1].delete(0, 'end')
+        gameScore[1].insert(0, score[1])
 
     def update_big_axes(self):
         for i in range(0, thrower1BigAxeBoxes.__len__()):
@@ -189,6 +200,7 @@ class application(Tk):
         self.update_files()
 
     def next_game(self):
+        self.determine_winner()
         self.switch_info()
         self.reset_axes()
         self.update_files()
@@ -199,6 +211,14 @@ class application(Tk):
         gameBox[1].delete(0, 'end')
         gameBox[1].insert(0, gameCount[1])
         self.update_files()
+
+    def determine_winner(self):
+        leftSum = sum([int(x) for x in [throwList[y] for y in leftAxes] if str(x).isdigit()]) + sum(leftBigAxes)
+        rightSum = sum([int(x) for x in [throwList[y] for y in rightAxes] if str(x).isdigit()]) + sum(rightBigAxes)
+        if leftSum > rightSum:
+            self.change_game_count(0, 1)
+        else:
+            self.change_game_count(1, 1)
 
     def switch_info(self):
         gameCount[0], gameCount[1] = gameCount[1], gameCount[0]
@@ -263,6 +283,14 @@ class application(Tk):
         file.close()
         file = open(directory + "/thrower_2_game_count.txt", "w")
         file.write(str(gameCount[1]))
+        file.close()
+
+        # Game scores
+        file = open(directory + "/thrower_1_game_score.txt", "w")
+        file.write(str(score[0]))
+        file.close()
+        file = open(directory + "/thrower_2_game_score.txt", "w")
+        file.write(str(score[1]))
         file.close()
 
         # Thrower 1 axes
@@ -356,13 +384,13 @@ class application(Tk):
                                         command=lambda: self.change_game_count(0, -1))
         thrower1GameCountMinus.grid(row=3, column=3, sticky=W)
 
-        gameScore[0].append(Entry(thrower1Frame, width=5, font=('ariel', 30, 'bold'), justify=CENTER, relief=SUNKEN,
+        gameScore.append(Entry(thrower1Frame, width=5, font=('ariel', 30, 'bold'), justify=CENTER, relief=SUNKEN,
                              borderwidth=3))
-        gameScore[0].grid(row=3, column=3)
+        gameScore[0].grid(row=4, column=3)
 
         thrower1AxeFrame = LabelFrame(thrower1Frame, bg=bgcolour, width=thrower1Frame.winfo_reqwidth() - 20, height=100,
                                       relief=GROOVE, text="Axes", font=("ariel", 12, "bold"))
-        thrower1AxeFrame.grid(row=4, column=2, columnspan=3, padx=5)
+        thrower1AxeFrame.grid(row=5, column=2, columnspan=3, padx=5)
 
         for i in range(0, 5):
             thrower1UpButtons.append(Button(thrower1AxeFrame, text=upArrow, font=("ariel", 7, "bold"),
@@ -383,7 +411,7 @@ class application(Tk):
         thrower1BigAxeFrame = LabelFrame(thrower1Frame, bg=bgcolour, width=thrower1Frame.winfo_reqwidth() - 20,
                                          height=100,
                                          relief=GROOVE, text="Big Axe", font=("ariel", 12, "bold"))
-        thrower1BigAxeFrame.grid(row=6, column=2, columnspan=3, padx=5)
+        thrower1BigAxeFrame.grid(row=7, column=2, columnspan=3, padx=5)
 
         thrower1BigAxePaintFrame = LabelFrame(thrower1BigAxeFrame, bg=bgcolour,
                                               width=thrower1Frame.winfo_reqwidth() - 20, height=100,
@@ -457,9 +485,13 @@ class application(Tk):
                                         command=lambda: self.change_game_count(1, -1))
         thrower2GameCountMinus.grid(row=3, column=3, sticky=W)
 
+        gameScore.append(Entry(thrower2Frame, width=5, font=('ariel', 30, 'bold'), justify=CENTER, relief=SUNKEN,
+                               borderwidth=3))
+        gameScore[1].grid(row=4, column=3)
+
         thrower2AxeFrame = LabelFrame(thrower2Frame, bg=bgcolour, width=thrower2Frame.winfo_reqwidth() - 20, height=100,
                                       relief=GROOVE, text="Axes", font=("ariel", 12, "bold"))
-        thrower2AxeFrame.grid(row=4, column=2, columnspan=3, padx=5)
+        thrower2AxeFrame.grid(row=5, column=2, columnspan=3, padx=5)
 
         for i in range(0, 5):
             thrower2UpButtons.append(Button(thrower2AxeFrame, text=upArrow, font=("ariel", 7, "bold"),
@@ -480,7 +512,7 @@ class application(Tk):
         thrower2BigAxeFrame = LabelFrame(thrower2Frame, bg=bgcolour, width=thrower2Frame.winfo_reqwidth() - 20,
                                          height=100,
                                          relief=GROOVE, text="Big Axe", font=("ariel", 12, "bold"))
-        thrower2BigAxeFrame.grid(row=5, column=2, columnspan=3, padx=5)
+        thrower2BigAxeFrame.grid(row=7, column=2, columnspan=3, padx=5)
 
         thrower2BigAxePaintFrame = LabelFrame(thrower2BigAxeFrame, bg=bgcolour,
                                               width=thrower2Frame.winfo_reqwidth() - 20, height=100,
