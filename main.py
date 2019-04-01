@@ -11,7 +11,7 @@ bgcolour = "white"
 upArrow = u"\u25B2"
 downArrow = u"\u25BC"
 checkmark = u"\u2713"
-throwList = ['-', '5', '3', 'D', '1', '0', '7']
+throwList = ['-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 bigAxeThrowList = ['-', u"\u2717", u"\u2713",]
 directory = "score_files"
 leftAxes = [0, 0, 0, 0, 0]
@@ -130,12 +130,12 @@ class application(Tk):
     def change_axe(self, position, direction, side):
         if (position != 4):
             if (side == 0):
-                if ((direction == 1 and leftAxes[position] < len(throwList) - 2) or (
+                if ((direction == 1 and leftAxes[position] < len(throwList) - 1) or (
                         direction == -1 and leftAxes[position] > 0)):
                     leftAxes[position] += direction
                     self.update_axes()
             else:
-                if ((direction == 1 and rightAxes[position] < len(throwList) - 2) or (
+                if ((direction == 1 and rightAxes[position] < len(throwList) - 1) or (
                         direction == -1 and rightAxes[position] > 0)):
                     rightAxes[position] += direction
                     self.update_axes()
