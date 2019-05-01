@@ -67,9 +67,15 @@ class application(Tk):
         self.update_files()
 
     def initialize_ui(self):
-        global directory
+        def browse_button():
+            global directory
+            filename = filedialog.askdirectory()
+            directory = filename
+            self.update_text()
+            self.update_files()
 
-        directory = filedialog.askdirectory()
+        button2 = Button(text="Set Folder", command=browse_button)
+        button2.grid(row=0, column=2)
 
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -236,12 +242,6 @@ class application(Tk):
             gameCount[side] += direction
             gameBox[side].delete(0, 'end')
             gameBox[side].insert(0, gameCount[side])
-
-    def set_folder(self):
-        global folderPath
-        folderPath = filedialog.askdirectory()
-        pathSetEntry.delete(0, 'end')
-        pathSetEntry.insert(0, folderPath)
 
     def switch_sides(self):
         self.switch_info()
